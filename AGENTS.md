@@ -1,0 +1,5 @@
+# Instruções para o Codex
+
+- Leia [CLAUDE.md](CLAUDE.md) para as convenções do projeto. Ao trabalhar no backend, leia também [nestjs-project/CLAUDE.md](nestjs-project/CLAUDE.md) e o [guia de testes](.claude/skills/testing-guide-nestjs-project/SKILL.md).
+- Para a Fase 03, siga o [plano técnico](docs/phases/phase-03-videos/phase-03-videos.md). Use o [contexto](docs/phases/phase-03-videos/context.md), as [decisões](docs/decisions/technical-decisions-phase-03-videos.md), a [validação](docs/phases/phase-03-videos/validation.md) e as [referências](docs/phases/phase-03-videos/library-refs.md) para conferir o escopo antes de editar. Registre por etapa em [progress.md](docs/phases/phase-03-videos/progress.md) o que mudou e quais testes foram executados.
+- Execute npm e npx no serviço `nestjs-api`. Rode `npm test -- --runInBand`, `npm run test:e2e -- --runInBand`, `npx tsc --noEmit` e `npm run lint`. Use bancos descartáveis e os serviços reais indicados pelo [plano de testes](docs/phases/phase-03-videos/test-plan.md).
