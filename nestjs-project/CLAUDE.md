@@ -34,6 +34,26 @@ docker compose exec nestjs-api npm run start:dev
 Services:
 - `nestjs-api` — NestJS API, port `3000`
 - `db` — PostgreSQL 17, port `5432`, database `streamtube`, user/password `streamtube`
+- `minio` — Private S3-compatible video storage, listening on host loopback port `9000`
+- `video-worker` — Opt-in Compose profile `videos` with pg-boss, ffprobe, and FFmpeg
+
+### Video uploads and processing
+
+Copy `.env.example` to `.env` for a new local setup. Set the S3 credentials in `.env` before starting MinIO. Configure `S3_ENDPOINT` for container-to-container traffic and `S3_PUBLIC_ENDPOINT` for the caller. The Compose file builds the archived MinIO Community release from pinned source and base images. See the [version and digest evidence](../docs/phases/phase-03-videos/library-refs.md).
+
+```bash
+docker compose up -d --build db mailpit minio nestjs-api
+docker compose exec nestjs-api npm ci
+docker compose exec nestjs-api npm run migration:run
+docker compose --profile videos up -d --build video-worker
+docker compose logs video-worker
+```
+
+The worker loads the same `.env` as the API. Use the same `DB_NAME` for both when exercising the full flow. Set `DB_DATABASE` alongside `DB_NAME` to point the TypeORM test helpers at a disposable test database. For the queue rollback tests, use another database or stop the consumer until the commit assertions finish.
+
+Start the API using the existing command when you need HTTP access. The Phase 02 access token authorizes the video owner. When creating a video, supply a title separately from its original filename. Upload parts directly to MinIO using the size returned for each signed PUT. If confirmation fails or the response is lost, retry the same completion request. A repeat can recover a finalized original and queue it exactly once. The worker stages a seekable copy of the original on disk, so allocate temporary space for one upload of up to 10 GB per worker. The original in MinIO is used for Range and download. The worker also consumes terminal failures from pg-boss so an expired job can update the video state.
+
+The [test plan](../docs/phases/phase-03-videos/test-plan.md) and [review evidence](../docs/phases/phase-03-videos/review-report.md) document the real services and the 10 GB test. Keep signed links out of logs and reports.
 
 All verification and teardown commands run on the **host machine**:
 

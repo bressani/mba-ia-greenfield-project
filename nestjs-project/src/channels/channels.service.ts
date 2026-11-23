@@ -8,12 +8,13 @@ const NICKNAME_COLUMN = 'nickname';
 const MAX_RETRIES = 5;
 
 function isPgUniqueViolationOnColumn(err: unknown, column: string): boolean {
-  if (!(err instanceof QueryFailedError)) return false;
-  const e = err as any;
   return (
-    e.code === PG_UNIQUE_VIOLATION &&
-    typeof e.detail === 'string' &&
-    e.detail.includes(column)
+    err instanceof QueryFailedError &&
+    'code' in err &&
+    err.code === PG_UNIQUE_VIOLATION &&
+    'detail' in err &&
+    typeof err.detail === 'string' &&
+    err.detail.includes(column)
   );
 }
 
