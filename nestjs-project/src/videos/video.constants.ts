@@ -1,0 +1,3 @@
+export const MAX_VIDEO_BYTES = 10_000_000_000;
+export const VIDEO_PART_BYTES = 64 * 1024 * 1024;
+export const MAX_VIDEO_PARTS = Math.ceil(MAX_VIDEO_BYTES / VIDEO_PART_BYTES);
